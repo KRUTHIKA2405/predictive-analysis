@@ -1,0 +1,59 @@
+import pandas as pd 
+import numpy as np 
+data = {
+    'X1': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    'X2': [1, 3, 2, 4, 5, 7, 6, 8, 9, 10],
+    'Class': [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]
+}
+df = pd.DataFrame(data)
+
+print("Our simple dataset:")
+display(df)
+def euclidean_distance(point1, point2):
+    distance = np.sqrt(np.sum((point1 - point2)**2))
+    return distance
+
+print("Euclidean distance function defined.")
+def predict_knn(training_data, test_point, k):
+    distances = []
+    for index, row in training_data.iterrows():
+        train_point_features = row[['X1', 'X2']].values
+        
+       
+        dist = euclidean_distance(train_point_features, test_point)
+        distances.append((dist, row['Class']))
+    
+    
+    distances.sort(key=lambda x: x[0])
+    k_nearest_neighbors = distances[:k]
+    
+    
+    neighbor_classes = [neighbor[1] for neighbor in k_nearest_neighbors]
+    
+    
+    prediction = max(set(neighbor_classes), key=neighbor_classes.count)
+    
+    return prediction
+
+print("KNN prediction function defined.")
+new_point = np.array([5.5, 6.0]) # A new point with X1=5.5, X2=6.0
+k_value = 3 # We want to consider the 3 nearest neighbors
+
+predicted_class = predict_knn(df, new_point, k_value)
+
+print(f"New data point: X1={new_point[0]}, X2={new_point[1]}")
+print(f"Predicted Class (k={k_value}): {predicted_class}")
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns # Import seaborn
+
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x='X1', y='X2', hue='Class', data=df, s=100, palette='viridis', legend='full')
+plt.scatter(new_point[0], new_point[1], color='red', marker='X', s=200, label=f'New Point (Predicted Class: {predicted_class})')
+plt.title('Simple Dataset with KNN Prediction')
+plt.xlabel('X1')
+plt.ylabel('X2')
+plt.legend()
+plt.grid(True)
+plt.show()
